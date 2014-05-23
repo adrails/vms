@@ -1,0 +1,47 @@
+<%if @vendors && !@vendors.empty? %>
+	Here are the list of vendors!!
+	<h1>Listing vendors</h1>
+
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Address</th>
+			<th>Email</th>
+			<th>Show</th>
+		</tr>
+
+	<% @vendors && @vendors.each do |vendor| %>
+		<% if vendor.is_active == true%>
+			<tr>
+				<td><%= vendor.name %></td>
+				<td><%= vendor.address %></td>
+				<td><%= vendor.email %></td>
+				<td><%= link_to 'Show', vendor %></td>
+			</tr>
+		<% end %>
+	<% end %>
+	</table>
+	<br />
+<% elsif @services && !@services.empty? %>
+		Here are the list of vendors!!
+	<h1>Listing vendors</h1>
+
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Show</th>
+		</tr>
+
+	<% @services && @services.each do |service| %>
+		<% if service.is_active == true%>
+			<tr>
+				<td><%= service.name %></td>
+				<td><%= link_to 'Show', service %></td>
+			</tr>
+		<% end %>
+	<% end %>
+	</table>
+	<br />
+<% else %>
+	No results found!!
+<% end %>

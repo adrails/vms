@@ -1,0 +1,10 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Invited:</b>
+  <%= @invite_list.invited %>
+</p>
+
+
+<%= link_to 'Edit', edit_invite_list_path(@invite_list) %> |
+<%= link_to 'Back', invite_lists_path %>

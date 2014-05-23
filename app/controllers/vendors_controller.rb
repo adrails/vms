@@ -1,0 +1,106 @@
+class VendorsController < ApplicationController
+  # GET /vendors
+  # GET /vendors.json
+	before_filter :authenticate_user!
+	before_filter :check_vendor_permission, :only => [:show, :edit, :destroy]
+  def index
+    @vendors = Vendor.all
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @vendors }
+    end
+  end
+
+  # GET /vendors/1
+  # GET /vendors/1.json
+  def show
+    @vendor = Vendor.find(params[:id])
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json { render json: @vendor }
+    end
+  end
+
+  # GET /vendors/new
+  # GET /vendors/new.json
+  def new
+    @vendor = Vendor.new
+    respond_to do |format|
+      format.html # new.html.erb
+      format.json { render json: @vendor }
+    end
+  end
+
+  # GET /vendors/1/edit
+  def edit
+    @vendor = Vendor.find(params[:id])
+  end
+
+  # POST /vendors
+  # POST /vendors.json
+  def create
+    @vendor = Vendor.new(params[:vendor])
+		@vendor.user_id = current_user.id
+    respond_to do |format|
+      if @vendor.save
+				if params[:service]
+					params[:service].keys.each do |f| 
+						@vendor.services.create(:name=>f,:is_active=>true)
+					end
+				end
+        format.html { redirect_to @vendor, notice: 'Vendor was successfully created.' }
+        format.json { render json: @vendor, status: :created, location: @vendor }
+      else
+        format.html { render action: "new" }
+        format.json { render json: @vendor.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /vendors/1
+  # PUT /vendors/1.json
+  def update
+    @vendor = Vendor.find(params[:id])
+
+    respond_to do |format|
+      if @vendor.update_attributes(params[:vendor])
+        format.html { redirect_to @vendor, notice: 'Vendor was successfully updated.' }
+        format.json { head :no_content }
+      else
+        format.html { render action: "edit" }
+        format.json { render json: @vendor.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /vendors/1
+  # DELETE /vendors/1.json
+  def destroy
+    @vendor = Vendor.find(params[:id])
+    @vendor.destroy
+
+    respond_to do |format|
+      format.html { redirect_to vendors_url }
+      format.json { head :no_content }
+    end
+  end
+  
+	def search
+		if params[:search]
+			@vendors = Vendor.find(Service.where(:name=> params[:search],:is_active => true).map(&:vendor_id))
+		elsif params[:search_by_vendor]
+			@services = Vendor.find_by_name(params[:search_by_vendor]).services
+		end
+	end
+	
+	def check_vendor_permission
+		@vendor = Vendor.find(params[:id])
+		if @vendor.user_id == current_user.id
+			return true
+		else
+			redirect_to vendors_path
+		end
+	end
+end

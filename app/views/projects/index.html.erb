@@ -1,0 +1,88 @@
+<h1>Listing projects</h1>
+<%= link_to 'New Project', new_project_path %>
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Is active</th>
+		<th>Show</th>
+		<th>Edit</th>
+		<th>Destroy</th>
+		<th>Assign This Project</th>
+	</tr>
+	
+	<% @projects.each do |project| %>
+	<tr>
+		<td><%= project.name %></td>
+		<td><%= project.is_active == true ? "Active" : "Inactive" %></td>
+		<% if project.user_id  == current_user.id %>
+			<% @project_id = project.id%>
+			<td><%= link_to 'Show', project %></td>
+			<td><%= link_to 'Edit', edit_project_path(project) %></td>
+			<td><%= link_to 'Destroy', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+			<td>
+				<div>
+					<%if InviteList.find_by_project_id(@project_id)%>
+						Project Assigned
+					<% else %>
+						<input type="checkbox" id="assign_project_<%=project.id%>" onclick="assign_project(this);"/>
+					<% end %>
+					<div class="show_vendor_details" style="display:none;">
+						<% @vendors.each do |vendor| %>
+							<div>
+								<br>
+								<input type="checkbox" id="service_list_<%= vendor.id%>" onclick="show_services(this);" name="vendor[<%vendor.id%>]"> </checkbox>
+								<%= vendor.name %>
+								<%= vendor.address %>
+								<%= vendor.email %>
+								<div class="service" style="display:none;">
+									<form action="/projects/assign_project" id="service_form" method=post>
+										<% vendor.services.each do |f|%>
+											<input type="hidden" name="project" value="<%= project.id%>" />
+											<input type="hidden" name="vendor" value="<%= vendor.id%>" />
+											<% if !Project.all.map(&:services_ids).compact.flatten.include?(f.id.to_s)%>
+												<input type="checkbox" name="service_ids[<%= f.id%>]"><%=f.name%></checkbox>
+											<% else %>
+												<input type="checkbox" name="service_ids[<%= f.id%>]" disabled><%=f.name%></checkbox>
+											<% end %>
+										<% end %>
+										<input type="submit" value="Assign">
+									</form>
+								</div>
+							</div>
+						<% end %>
+					</div>
+				</div>
+			</td>
+		<% end %>
+	<% end %>
+	</tr>
+	
+</table>
+<br />
+
+
+<script type="text/javascript">
+function assign_project(id)
+{
+	$(id).parent('div').children('.show_vendor_details').toggle();
+}
+function show_services(id)
+{
+	$(id).parent('div').children('.service').toggle();
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

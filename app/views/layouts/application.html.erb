@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vms</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application", :defaults %>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+<% if user_signed_in? %>
+		<li>
+		<%="logged in as #{current_user.email}"%>
+		<%= link_to('Logout', destroy_user_session_path, :method => :delete) %>        
+		</li><br><br>
+		<%if current_user && current_user.role == "ADMIN"%>
+			<ul>
+				<li><%=link_to 'Manage Users',admins_path%></li>
+				<li><%=link_to 'Create User', new_user_registration_path%></li>
+			</ul><br><br>
+		<% else %>
+			<ul>
+				<li><%=link_to 'Vendors',vendors_path%></li>
+				<li><%=link_to 'Assigned'%></li>
+				<li><%=link_to 'Projects', projects_path%></li>
+				<li><%=link_to 'Service', services_path%></li>
+			</ul><br><br>
+		<% end %>
+<% else %>
+		<li>
+		<%= link_to('Login', new_user_session_path)  %>  
+		</li>
+<% end %>
+<p class="notice"><%= notice %></p>
+<p class="alert"><%= alert %></p>
+
+<%= yield %>
+
+</body>
+</html>
